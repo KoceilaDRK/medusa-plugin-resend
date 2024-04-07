@@ -13,10 +13,7 @@ class OrderSubscriber {
     this.notificationService_.subscribe("order.refund_created", "resend");
     this.notificationService_.subscribe("order.return_requested", "resend");
     this.notificationService_.subscribe("order.shipment_created", "resend");
-    this.notificationService_.subscribe(
-      "restock-notification.restocked",
-      "resend"
-    ); // Added event
+    this.notificationService_.subscribe("restock-notification.restocked","resend"); // Added event
     this.notificationService_.subscribe("swap.created", "resend");
     this.notificationService_.subscribe("swap.received", "resend"); // Added event
     this.notificationService_.subscribe("swap.shipment_created", "resend");
