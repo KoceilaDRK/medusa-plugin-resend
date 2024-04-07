@@ -397,6 +397,10 @@ class ResendService extends NotificationService {
             return this.gcCreatedData(eventData, attachmentGenerator)
          case "order.placed":
             return this.orderPlacedData(eventData, attachmentGenerator)
+         case "order.fulfillment_created":
+            return this.orderPlacedData(eventData, attachmentGenerator)  //TODO
+         case "order.fulfillment_canceled":
+            return this.orderPlacedData(eventData, attachmentGenerator)  //TODO   
          case "order.shipment_created":
             return this.orderShipmentCreatedData(eventData, attachmentGenerator)
          case "order.canceled":
