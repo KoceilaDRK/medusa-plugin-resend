@@ -36,18 +36,18 @@ class ResendService extends NotificationService {
       *    }
       */
    constructor({
-         storeService,
-         orderService,
-         returnService,
-         swapService,
-         cartService,
-         lineItemService,
-         claimService,
-         fulfillmentService,
-         fulfillmentProviderService,
-         totalsService,
-         productVariantService,
-      }, options) {
+      storeService,
+      orderService,
+      returnService,
+      swapService,
+      cartService,
+      lineItemService,
+      claimService,
+      fulfillmentService,
+      fulfillmentProviderService,
+      totalsService,
+      productVariantService,
+   }, options) {
 
       super()
 
@@ -73,7 +73,7 @@ class ResendService extends NotificationService {
 
    async sendNotification(event, eventData, attachmentGenerator) {
       let templateId = this.getTemplateId(event)
-      if (!templateId) { 
+      if (!templateId) {
          throw new MedusaError(MedusaError.Types.INVALID_DATA, "Resend service: No template was set for this event")
       }
 
@@ -92,7 +92,7 @@ class ResendService extends NotificationService {
       }
 
       if (this.options_.subject_template_type === 'text') {
-         sendOptions.subject = fs.existsSync(path.join(this.templatePath_, templateId, 'subject.txt'))?
+         sendOptions.subject = fs.existsSync(path.join(this.templatePath_, templateId, 'subject.txt')) ?
             fs.readFileSync(path.join(this.templatePath_, templateId, 'subject.txt'), "utf8") : null
       } else {
          sendOptions.subject = await this.compileSubjectTemplate(templateId, data)
@@ -107,8 +107,8 @@ class ResendService extends NotificationService {
          if (text) sendOptions.text = text
       }
 
-      if (!sendOptions.subject || (!sendOptions.html && !sendOptions.text && !sendOptions.react)) { 
-         throw new MedusaError(MedusaError.Types.INVALID_DATA, "Resend service: The requested templates were not found. Check template path in config.") 	
+      if (!sendOptions.subject || (!sendOptions.html && !sendOptions.text && !sendOptions.react)) {
+         throw new MedusaError(MedusaError.Types.INVALID_DATA, "Resend service: The requested templates were not found. Check template path in config.")
       }
 
       const attachments = await this.fetchAttachments(
@@ -128,8 +128,8 @@ class ResendService extends NotificationService {
 
       let status
       await this.transporter_.sendEmail(sendOptions)
-      .then(() => { status = "sent" })
-      .catch((error) => { status = "failed"; console.log(error) })
+         .then(() => { status = "sent" })
+         .catch((error) => { status = "failed"; console.log(error) })
 
       // We don't want heavy docs stored in DB
       delete sendOptions.attachments
@@ -160,8 +160,8 @@ class ResendService extends NotificationService {
 
       let status
       await this.transporter_.sendMail(sendOptions)
-      .then(() => { status = "sent" })
-      .catch((error) => { status = "failed"; console.log(error) })
+         .then(() => { status = "sent" })
+         .catch((error) => { status = "failed"; console.log(error) })
 
       return { to: sendOptions.to, status, data: sendOptions }
    }
@@ -192,12 +192,12 @@ class ResendService extends NotificationService {
          }
 
          if (this.options_.subject_template_type === 'text') {
-            sendOptions.subject = fs.existsSync(path.join(this.templatePath_, templateId, 'subject.txt'))?
+            sendOptions.subject = fs.existsSync(path.join(this.templatePath_, templateId, 'subject.txt')) ?
                fs.readFileSync(path.join(this.templatePath_, templateId, 'subject.txt'), "utf8") : null
          } else {
             sendOptions.subject = await this.compileSubjectTemplate(templateId, data)
          }
-   
+
          if (this.options_.body_template_type === 'react') {
             const react = await this.compileReactTemplate(templateId, data)
             if (react) sendOptions.react = react
@@ -206,9 +206,9 @@ class ResendService extends NotificationService {
             if (html) sendOptions.html = html
             if (text) sendOptions.text = text
          }
-   
+
          if (!sendOptions.subject || (!sendOptions.html && !sendOptions.text && !sendOptions.react)) {
-            return { 
+            return {
                message: "Message not sent. Templates were not found or a compile error was encountered.",
                results: {
                   sendOptions
@@ -237,9 +237,9 @@ class ResendService extends NotificationService {
       const textTemplate = fs.existsSync(path.join(this.templatePath_, templateId, 'text.hbs')) ?
          Handlebars.compile(fs.readFileSync(path.join(this.templatePath_, templateId, 'text.hbs'), "utf8")) : null
 
-      return { 
-         html: htmlTemplate? htmlTemplate(data) : null, 
-         text: textTemplate? textTemplate(data) : null
+      return {
+         html: htmlTemplate ? htmlTemplate(data) : null,
+         text: textTemplate ? textTemplate(data) : null
       }
    }
 
@@ -254,79 +254,85 @@ class ResendService extends NotificationService {
       if (this.options_.localization && this.options_.localization[locale]) {
          const map = this.options_.localization[locale]
          switch (event) {
-         case "order.return_requested":
-            return map.order_return_requested_template
-         case "swap.shipment_created":
-            return map.swap_shipment_created_template
-         case "claim.shipment_created":
-            return map.claim_shipment_created_template
-         case "order.items_returned":
-            return map.order_items_returned_template
-         case "swap.received":
-            return map.swap_received_template
-         case "swap.created":
-            return map.swap_created_template
-         case "gift_card.created":
-            return map.gift_card_created_template
-         case "order.gift_card_created":
-            return map.gift_card_created_template
-         case "order.placed":
-            return map.order_placed_template
-         case "order.shipment_created":
-            return map.order_shipped_template
-         case "order.canceled":
-            return map.order_canceled_template
-         case "user.password_reset":
-            return map.user_password_reset_template
-         case "customer.password_reset":
-            return map.customer_password_reset_template
-         case "restock-notification.restocked":
-            return map.medusa_restock_template
-         case "order.refund_created":
-            return map.order_refund_created_template
-         default:
-            return null
+            case "customer.password_reset":
+               return map.customer_password_reset_template
+            case "gift_card.created":
+               return map.gift_card_created_template
+            case "order.canceled":
+               return map.order_canceled_template
+            case "order.fulfillment_created":
+               return map.order_fulfillment_created_template
+            case "order.fulfillment_canceled":
+               return map.order_fulfillment_canceled_template
+            case "order.gift_card_created":
+               return map.gift_card_created_template
+            case "order.items_returned":
+               return map.order_items_returned_template
+            case "order.placed":
+               return map.order_placed_template
+            case "order.refund_created":
+               return map.order_refund_created_template
+            case "order.return_requested":
+               return map.order_return_requested_template
+            case "order.shipment_created":
+               return map.order_shipped_template
+            case "restock-notification.restocked":
+               return map.medusa_restock_template
+            case "swap.created":
+               return map.swap_created_template
+            case "swap.received":
+               return map.swap_received_template
+            case "swap.shipment_created":
+               return map.swap_shipment_created_template
+            case "user.password_reset":
+               return map.user_password_reset_template
+            default:
+               return null
          }
       }
       return null
    }
 
+
    getTemplateId(event) {
       switch (event) {
-         case "order.return_requested":
-            return this.options_.order_return_requested_template
-         case "swap.shipment_created":
-            return this.options_.swap_shipment_created_template
-         case "claim.shipment_created":
-            return this.options_.claim_shipment_created_template
-         case "order.items_returned":
-            return this.options_.order_items_returned_template
-         case "swap.received":
-            return this.options_.swap_received_template
-         case "swap.created":
-            return this.options_.swap_created_template
-         case "gift_card.created":
-            return this.options_.gift_card_created_template
-         case "order.gift_card_created":
-            return this.options_.gift_card_created_template
-         case "order.placed":
-            return this.options_.order_placed_template
-         case "order.shipment_created":
-            return this.options_.order_shipped_template
-         case "order.canceled":
-            return this.options_.order_canceled_template
-         case "user.password_reset":
-            return this.options_.user_password_reset_template
          case "customer.password_reset":
             return this.options_.customer_password_reset_template
-         case "restock-notification.restocked":
-            return this.options_.medusa_restock_template
+         case "gift_card.created":
+            return this.options_.gift_card_created_template
+         case "order.canceled":
+            return this.options_.order_canceled_template
+         case "order.fulfillment_created":
+            return this.options_.order_fulfillment_created_template
+         case "order.fulfillment_canceled":
+            return this.options_.order_fulfillment_canceled_template
+         case "order.gift_card_created":
+            return this.options_.gift_card_created_template
+         case "order.items_returned":
+            return this.options_.order_items_returned_template
+         case "order.placed":
+            return this.options_.order_placed_template
          case "order.refund_created":
             return this.options_.order_refund_created_template
+         case "order.return_requested":
+            return this.options_.order_return_requested_template
+         case "order.shipment_created":
+            return this.options_.order_shipped_template
+         case "restock-notification.restocked":
+            return this.options_.medusa_restock_template
+         case "swap.created":
+            return this.options_.swap_created_template
+         case "swap.received":
+            return this.options_.swap_received_template
+         case "swap.shipment_created":
+            return this.options_.swap_shipment_created_template
+         case "user.password_reset":
+            return this.options_.user_password_reset_template
          default:
             return null
       }
    }
+
 
    async fetchAttachments(event, data, attachmentGenerator) {
       switch (event) {
@@ -367,7 +373,7 @@ class ResendService extends NotificationService {
             return attachments
          }
          default:
-         return []
+            return []
       }
    }
 
@@ -503,9 +509,8 @@ class ResendService extends NotificationService {
             return {
                is_giftcard: false,
                code: discount.code,
-               descriptor: `${discount.rule.value}${
-                  discount.rule.type === "percentage" ? "%" : ` ${currencyCode}`
-               }`,
+               descriptor: `${discount.rule.value}${discount.rule.type === "percentage" ? "%" : ` ${currencyCode}`
+                  }`,
             }
          })
       }
@@ -591,9 +596,8 @@ class ResendService extends NotificationService {
             return {
                is_giftcard: false,
                code: discount.code,
-               descriptor: `${discount.rule.value}${
-                  discount.rule.type === "percentage" ? "%" : ` ${currencyCode}`
-               }`,
+               descriptor: `${discount.rule.value}${discount.rule.type === "percentage" ? "%" : ` ${currencyCode}`
+                  }`,
             }
          })
       }
@@ -687,8 +691,8 @@ class ResendService extends NotificationService {
          {
             id: returnRequest.items.map(({ item_id }) => item_id),
          },
-         { 
-            relations: ["tax_lines"] 
+         {
+            relations: ["tax_lines"]
          }
       )
 
@@ -710,23 +714,23 @@ class ResendService extends NotificationService {
       // Calculate which items are in the return
       const returnItems = await Promise.all(
          returnRequest.items.map(async (i) => {
-         const found = items.find((oi) => oi.id === i.item_id)
-         found.quantity = i.quantity
-         found.thumbnail = this.normalizeThumbUrl_(found.thumbnail)
-         found.totals = await this.totalsService_.getLineItemTotals(
-            found,
-            order,
-            {
-               include_tax: true,
-               use_tax_lines: true,
-            }
-         )
-         found.price = `${this.humanPrice_(
-            found.totals.total,
-            currencyCode
-         )} ${currencyCode}`
-         found.tax_lines = found.totals.tax_lines
-         return found
+            const found = items.find((oi) => oi.id === i.item_id)
+            found.quantity = i.quantity
+            found.thumbnail = this.normalizeThumbUrl_(found.thumbnail)
+            found.totals = await this.totalsService_.getLineItemTotals(
+               found,
+               order,
+               {
+                  include_tax: true,
+                  use_tax_lines: true,
+               }
+            )
+            found.price = `${this.humanPrice_(
+               found.totals.total,
+               currencyCode
+            )} ${currencyCode}`
+            found.tax_lines = found.totals.tax_lines
+            return found
          })
       )
 
@@ -741,10 +745,10 @@ class ResendService extends NotificationService {
       if (returnRequest.shipping_method) {
          const base = returnRequest.shipping_method.price
          shippingTotal =
-         base +
-         returnRequest.shipping_method.tax_lines.reduce((acc, next) => {
-            return Math.round(acc + base * (next.rate / 100))
-         }, 0)
+            base +
+            returnRequest.shipping_method.tax_lines.reduce((acc, next) => {
+               return Math.round(acc + base * (next.rate / 100))
+            }, 0)
       }
 
       const locale = await this.extractLocale(order)
@@ -830,15 +834,15 @@ class ResendService extends NotificationService {
 
       const decoratedItems = await Promise.all(
          cart.items.map(async (i) => {
-         const totals = await this.totalsService_.getLineItemTotals(i, cart, {
-            include_tax: true,
-         })
+            const totals = await this.totalsService_.getLineItemTotals(i, cart, {
+               include_tax: true,
+            })
 
-         return {
-            ...i,
-            totals,
-            price: this.humanPrice_(totals.subtotal + totals.tax_total, currencyCode),
-         }
+            return {
+               ...i,
+               totals,
+               price: this.humanPrice_(totals.subtotal + totals.tax_total, currencyCode),
+            }
          })
       )
 
@@ -939,17 +943,17 @@ class ResendService extends NotificationService {
 
       const decoratedItems = await Promise.all(
          cart.items.map(async (i) => {
-         const totals = await this.totalsService_.getLineItemTotals(i, cart, {
-            include_tax: true,
-         })
+            const totals = await this.totalsService_.getLineItemTotals(i, cart, {
+               include_tax: true,
+            })
 
-         return {
-            ...i,
-            totals,
-            tax_lines: totals.tax_lines,
-            price: `${this.humanPrice_(totals.original_total / i.quantity, currencyCode)} ${currencyCode}`,
-            discounted_price: `${this.humanPrice_(totals.total / i.quantity, currencyCode)} ${currencyCode}`,
-         }
+            return {
+               ...i,
+               totals,
+               tax_lines: totals.tax_lines,
+               price: `${this.humanPrice_(totals.original_total / i.quantity, currencyCode)} ${currencyCode}`,
+               discounted_price: `${this.humanPrice_(totals.total / i.quantity, currencyCode)} ${currencyCode}`,
+            }
          })
       )
 
@@ -1044,18 +1048,18 @@ class ResendService extends NotificationService {
 
       const returnItems = await Promise.all(
          swap.return_order.items.map(async (i) => {
-         const found = items.find((oi) => oi.id === i.item_id)
-         const totals = await this.totalsService_.getLineItemTotals(i, cart, {
-            include_tax: true,
-         })
+            const found = items.find((oi) => oi.id === i.item_id)
+            const totals = await this.totalsService_.getLineItemTotals(i, cart, {
+               include_tax: true,
+            })
 
-         return {
-            ...found,
-            thumbnail: this.normalizeThumbUrl_(found.thumbnail),
-            price: `${this.humanPrice_(totals.original_total / i.quantity, currencyCode)} ${currencyCode}`,
-            discounted_price: `${this.humanPrice_(totals.total / i.quantity, currencyCode)} ${currencyCode}`,
-            quantity: i.quantity,
-         }
+            return {
+               ...found,
+               thumbnail: this.normalizeThumbUrl_(found.thumbnail),
+               price: `${this.humanPrice_(totals.original_total / i.quantity, currencyCode)} ${currencyCode}`,
+               discounted_price: `${this.humanPrice_(totals.total / i.quantity, currencyCode)} ${currencyCode}`,
+               quantity: i.quantity,
+            }
          })
       )
 
